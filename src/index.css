@@ -1,0 +1,40 @@
+html { overflow-x: hidden; scroll-behavior: smooth; }
+body { margin: 0; background: #E3E2DE; color: #1B0E0D; font-family: "General Sans", sans-serif; }
+a { color: inherit; text-decoration: none; }
+::selection { background: #31EF07; color: #1B0E0D; }
+@keyframes ribbon { to { transform: translateX(-50%); } }
+@keyframes ribbon-rev { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+@keyframes rise { from { opacity: 0; transform: translateY(32px); } to { opacity: 1; transform: none; } }
+@keyframes heroLine { from { transform: translateY(110%) rotate(3deg); } to { transform: none; } }
+@keyframes heroFade { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes heroZoom { from { opacity: 0; transform: scale(.985); } to { opacity: 1; transform: scale(1); } }
+@keyframes heroRule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes heroCue { 0%, 100% { transform: translateY(0); opacity: .55; } 50% { transform: translateY(8px); opacity: 1; } }
+.hl { display: block; overflow: hidden; }
+.hl > span { display: block; animation: heroLine 1.05s cubic-bezier(.16,.84,.3,1) both; }
+.hf { animation: heroFade .9s cubic-bezier(.16,.84,.3,1) both; }
+[data-reveal] { opacity: 1; }
+[data-reveal].is-armed { opacity: 0; }
+[data-reveal].is-in { opacity: 1; animation: rise .8s cubic-bezier(.165,.84,.44,1) forwards; }
+.lnk { position: relative; display: inline-block; }
+.lnk::after { content: ""; position: absolute; left: 0; right: 0; bottom: -6px; height: 2px; background: #31EF07; transform: scaleX(0); transform-origin: left; transition: transform .5s cubic-bezier(.165,.84,.44,1); }
+.lnk:hover::after { transform: scaleX(1); }
+.imgz { overflow: hidden; }
+.imgz img { transition: transform .7s cubic-bezier(.165,.84,.44,1); display: block; width: 100%; }
+.imgz:hover img { transform: scale(1.05); }
+.card .badge { opacity: 0; transition: opacity .3s ease-in-out; }
+.card:hover .badge { opacity: 1; }
+.card .meta { border-bottom: 1px solid #1B0E0D; transition: border-color .3s ease-in-out; }
+.card:hover .meta { border-color: #C72A09; }
+
+/* pseudo-state (style-hover / style-active / style-focus) conversions */
+.hero-cta { transition: background-color .35s, transform .35s; }
+.hero-cta:hover { background: #61220F; transform: translateY(-3px); }
+
+.cap-title { transition: color .5s; }
+.cap-title:hover { color: #C72A09; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+  [data-reveal] { opacity: 1 !important; }
+}
