@@ -44,6 +44,10 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
   const outWord3Ref = useRef(null)
   const hSectionRef = useRef(null)
 
+  const revealElsRef = useRef([])
+  const capRowsRef = useRef([])
+  const hRowsRef = useRef([])
+
   useEffect(() => {
     const onResize = () => {
       const w = (rootRef.current && rootRef.current.clientWidth) || window.innerWidth
@@ -51,6 +55,30 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
     }
     onResize()
     window.addEventListener('resize', onResize)
+
+    // Cache DOM lookups once instead of re-querying the whole document every
+    // animation frame — querySelectorAll + per-row querySelector calls inside
+    // the rAF loop were the main source of jank/stutter right at page load.
+    revealElsRef.current = Array.from(document.querySelectorAll('[data-reveal]'))
+    capRowsRef.current = capSectionRef.current
+      ? Array.from(capSectionRef.current.querySelectorAll('[data-cap]')).map((row) => ({
+          row,
+          anchor: row.querySelector('[data-captitle]'),
+          fill: row.querySelector('[data-capfill]'),
+          num: row.querySelector('[data-capnum]'),
+          copy: row.querySelector('[data-capcopy]'),
+        }))
+      : []
+    hRowsRef.current = hSectionRef.current
+      ? Array.from(hSectionRef.current.querySelectorAll('[data-wrow]')).map((el) => ({
+          el,
+          title: el.querySelector('[data-wtitle]'),
+          body: el.querySelector('[data-wbody]'),
+          meta: el.querySelector('[data-wmeta]'),
+          rule: el.querySelector('[data-wrule]'),
+          tick: el.querySelector('[data-wtick]'),
+        }))
+      : []
 
     const frame = () => {
       let sc = null, best = 0
@@ -71,13 +99,14 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
       const vh = sc ? sc.clientHeight : window.innerHeight
       const base = sc && sc !== document.documentElement && sc !== document.body ? sc.getBoundingClientRect().top : 0
       const off = revealOnScroll === false
-      document.querySelectorAll('[data-reveal]:not(.is-in)').forEach((el) => {
-        if (off) { el.classList.remove('is-armed'); el.classList.add('is-in'); return }
+      for (const el of revealElsRef.current) {
+        if (el.classList.contains('is-in')) continue
+        if (off) { el.classList.remove('is-armed'); el.classList.add('is-in'); continue }
         const r = el.getBoundingClientRect()
         const y = r.top - base
         if (y < vh * 0.9 && y + r.height > 0) { el.classList.remove('is-armed'); el.classList.add('is-in') }
         else if (y >= vh * 0.9) el.classList.add('is-armed')
-      })
+      }
 
       if (heroImgRef.current) {
         const hr = heroImgRef.current.getBoundingClientRect()
@@ -95,15 +124,11 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
         const cb = capSectionRef.current.getBoundingClientRect()
         const ck = Math.min(1, Math.max(0, (vh - (cb.top - base)) / (vh + cb.height)))
         if (capWordRef.current) capWordRef.current.style.transform = 'translate3d(' + (-6 - ck * 30).toFixed(2) + '%,0,0)'
-        capSectionRef.current.querySelectorAll('[data-cap]').forEach((row, i) => {
-          const anchor = row.querySelector('[data-captitle]')
+        capRowsRef.current.forEach(({ anchor, fill, num, copy }, i) => {
           if (!anchor) return
           const b = anchor.getBoundingClientRect()
           const top = b.top - base
           const on = top < vh * 0.8
-          const fill = row.querySelector('[data-capfill]')
-          const num = row.querySelector('[data-capnum]')
-          const copy = row.querySelector('[data-capcopy]')
           if (fill) fill.style.transform = 'scaleX(' + (on ? 1 : 0) + ')'
           if (copy) { copy.style.opacity = on ? '1' : '0'; copy.style.transform = on ? 'none' : 'translateY(14px)' }
           const prog = Math.min(1, Math.max(-1, (vh * 0.62 - top) / vh))
@@ -120,7 +145,7 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
         if (outWordRef.current) outWordRef.current.style.opacity = String(0.82 + Math.min(0.18, k * 0.4))
       }
       if (hSectionRef.current) {
-        const rows = hSectionRef.current.querySelectorAll('[data-wrow]')
+        const rows = hRowsRef.current
         const n = rows.length || 1
         const r = hSectionRef.current.getBoundingClientRect()
         const spanH = r.height - vh
@@ -136,13 +161,8 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
           return next
         })
 
-        rows.forEach((el, i) => {
+        rows.forEach(({ el, title, body, meta, rule, tick }, i) => {
           const on = i === nearest
-          const title = el.querySelector('[data-wtitle]')
-          const body = el.querySelector('[data-wbody]')
-          const meta = el.querySelector('[data-wmeta]')
-          const rule = el.querySelector('[data-wrule]')
-          const tick = el.querySelector('[data-wtick]')
           el.style.padding = on ? (state.wide ? '40px 0 48px' : '32px 0 36px') : (state.wide ? '28px 0' : '22px 0')
           if (title) {
             title.style.color = on ? '#003242' : 'transparent'
@@ -287,6 +307,8 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
             ref={heroImgRef}
             src="/espresso-campaign.png"
             alt="Sculptural architectural set of arches, stairs and geometric forms in terracotta, stone and deep green"
+            fetchPriority="high"
+            decoding="async"
             style={{
               position: 'absolute',
               inset: 0,
