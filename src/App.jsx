@@ -348,24 +348,27 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
             animation: 'heroZoom 2.4s cubic-bezier(.16,.84,.3,1) both',
           }}
         >
-          <img
-            ref={heroImgRef}
-            src="/espresso-campaign.png"
-            alt="Sculptural architectural set of arches, stairs and geometric forms in terracotta, stone and deep green"
-            fetchPriority="high"
-            decoding="async"
-            style={{
-              position: 'absolute',
-              inset: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: wide ? 'contain' : 'cover',
-              objectPosition: 'center center',
-              transformOrigin: 'center center',
-              filter: 'contrast(1.06) saturate(1.04) brightness(1.35)',
-              willChange: 'transform',
-            }}
-          />
+          <picture>
+            <source type="image/webp" srcSet="/espresso-campaign.webp" />
+            <img
+              ref={heroImgRef}
+              src="/espresso-campaign.png"
+              alt="Sculptural architectural set of arches, stairs and geometric forms in terracotta, stone and deep green"
+              fetchPriority="high"
+              decoding="async"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: wide ? 'contain' : 'cover',
+                objectPosition: 'center center',
+                transformOrigin: 'center center',
+                filter: 'contrast(1.06) saturate(1.04) brightness(1.35)',
+                willChange: 'transform',
+              }}
+            />
+          </picture>
         </div>
         <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(105deg, rgba(27,14,13,.88) 0%, rgba(27,14,13,.55) 42%, rgba(27,14,13,.2) 68%, rgba(27,14,13,.35) 100%)' }}></div>
         <div aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 1, background: 'linear-gradient(to bottom, rgba(27,14,13,.3), rgba(27,14,13,.04) 30%, rgba(27,14,13,.45) 70%, rgba(27,14,13,.92))' }}></div>
