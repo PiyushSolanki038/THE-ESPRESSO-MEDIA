@@ -200,6 +200,12 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
 
   const active = STEP_LIST[Math.min(STEP_LIST.length - 1, Math.max(0, hActive))]
 
+  // The vw/1.5 aspect-ratio height is meant for wide/landscape screens; on a
+  // narrow mobile portrait viewport it collapses to ~250-280px, which is too
+  // short for the headline + meta bar and makes them overlap the sticky
+  // header. Fall back to a near-full-height hero on mobile instead.
+  const heroSectionHeight = wide ? 'min(calc(100vw / 1.5), 100vh)' : 'min(100svh, 820px)'
+
   const progressWidth = progress + '%'
   const hProgressWidth = hProgress + '%'
 
@@ -292,7 +298,7 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
         </div>
       </header>
 
-      <section id="top" ref={heroSectionRef} style={{ position: 'relative', width: '100%', height: 'min(calc(100vw / 1.5), 100vh)', minHeight: 'min(calc(100vw / 1.5), 100vh)', marginTop: -72, background: '#1B0E0D', color: '#E3E2DE', overflow: 'hidden' }}>
+      <section id="top" ref={heroSectionRef} style={{ position: 'relative', width: '100%', height: heroSectionHeight, minHeight: heroSectionHeight, marginTop: -72, background: '#1B0E0D', color: '#E3E2DE', overflow: 'hidden' }}>
         <span aria-hidden="true" style={{ position: 'absolute', inset: 0, zIndex: 0, background: 'radial-gradient(120% 90% at 50% 45%, rgba(97,34,15,.5), rgba(27,14,13,1) 78%)' }}></span>
         <div
           aria-hidden="true"
