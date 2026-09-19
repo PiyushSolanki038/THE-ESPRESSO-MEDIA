@@ -31,6 +31,7 @@ const TICKER_GROUPS = [0, 1]
 export default function App({ revealOnScroll = true, showTicker = true, tickerSeconds = 22 }) {
   const [state, setState] = useState({ progress: 0, hProgress: 0, hActive: 0, wide: true, roomy: true })
   const { progress, hProgress, hActive, wide, roomy } = state
+  const [navOpen, setNavOpen] = useState(false)
 
   const rootRef = useRef(null)
   const heroImgRef = useRef(null)
@@ -52,6 +53,7 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
     const onResize = () => {
       const w = (rootRef.current && rootRef.current.clientWidth) || window.innerWidth
       setState((s) => ({ ...s, wide: w >= 860, roomy: w >= 1120 }))
+      if (w >= 860) setNavOpen(false)
     }
     onResize()
     window.addEventListener('resize', onResize)
@@ -292,10 +294,47 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
             <a href="#studio" className="lnk">Studio</a>
           </nav>
           <div style={{ display: 'flex', alignItems: 'center', gap: 20, fontFamily: "'JetBrains Mono',monospace", fontSize: 12, letterSpacing: '.14em', textTransform: 'uppercase' }}>
-            <span>AMD · IST</span>
-            <a href="#contact" className="lnk" style={{ fontWeight: 500 }}>Enquire</a>
+            {wide && <span>AMD · IST</span>}
+            {wide && <a href="#contact" className="lnk" style={{ fontWeight: 500 }}>Enquire</a>}
+            {!wide && (
+              <button
+                type="button"
+                aria-label={navOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={navOpen}
+                onClick={() => setNavOpen((v) => !v)}
+                style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 5, width: 32, height: 32, padding: 0, background: 'transparent', border: 0, cursor: 'pointer' }}
+              >
+                <span style={{ display: 'block', width: '100%', height: 2, background: '#E3E2DE', transition: 'transform .3s, opacity .3s', transform: navOpen ? 'translateY(7px) rotate(45deg)' : 'none' }}></span>
+                <span style={{ display: 'block', width: '100%', height: 2, background: '#E3E2DE', transition: 'opacity .3s', opacity: navOpen ? 0 : 1 }}></span>
+                <span style={{ display: 'block', width: '100%', height: 2, background: '#E3E2DE', transition: 'transform .3s, opacity .3s', transform: navOpen ? 'translateY(-7px) rotate(-45deg)' : 'none' }}></span>
+              </button>
+            )}
           </div>
         </div>
+        {!wide && (
+          <nav
+            aria-label="Mobile navigation"
+            style={{
+              position: 'absolute',
+              top: '100%',
+              left: 0,
+              right: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 0,
+              background: '#1B0E0D',
+              borderTop: '1px solid rgba(227,226,222,.2)',
+              overflow: 'hidden',
+              maxHeight: navOpen ? '320px' : '0px',
+              transition: 'max-height .35s cubic-bezier(.16,.84,.3,1)',
+            }}
+          >
+            <a href="#capabilities" onClick={() => setNavOpen(false)} style={{ padding: '18px 24px', fontSize: 15, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', borderBottom: '1px solid rgba(227,226,222,.15)' }}>Capabilities</a>
+            <a href="#approach" onClick={() => setNavOpen(false)} style={{ padding: '18px 24px', fontSize: 15, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', borderBottom: '1px solid rgba(227,226,222,.15)' }}>Approach</a>
+            <a href="#studio" onClick={() => setNavOpen(false)} style={{ padding: '18px 24px', fontSize: 15, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', borderBottom: '1px solid rgba(227,226,222,.15)' }}>Studio</a>
+            <a href="#contact" onClick={() => setNavOpen(false)} style={{ padding: '18px 24px', fontSize: 15, fontWeight: 500, textTransform: 'uppercase', letterSpacing: '.08em', color: '#31EF07' }}>Enquire</a>
+          </nav>
+        )}
       </header>
 
       <section id="top" ref={heroSectionRef} style={{ position: 'relative', width: '100%', height: heroSectionHeight, minHeight: heroSectionHeight, marginTop: -72, background: '#1B0E0D', color: '#E3E2DE', overflow: 'hidden' }}>
@@ -342,7 +381,7 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
         </div>
 
         <div ref={heroContentRef} style={{ position: 'absolute', inset: 0, zIndex: 2, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', padding: heroPad, boxSizing: 'border-box', willChange: 'transform' }}>
-          <h1 data-hero-fade="" style={{ margin: 'auto 0 0', flex: '0 0 auto', fontFamily: "'Clash Grotesk',sans-serif", fontWeight: 700, fontSize: heroSize, lineHeight: 0.78, letterSpacing: '-.055em', textTransform: 'uppercase', color: '#FFFFFF', textShadow: '0 1px 0 rgba(0,0,0,1), 0 2px 12px rgba(0,0,0,1), 0 10px 34px rgba(0,0,0,.95), 0 24px 70px rgba(27,14,13,.85)' }}>
+          <h1 data-hero-fade="" style={{ margin: 'auto 0 0', flex: '0 0 auto', fontFamily: "'Clash Grotesk',sans-serif", fontWeight: 700, fontSize: heroSize, lineHeight: 0.78, letterSpacing: '-.055em', textTransform: 'uppercase', color: '#FFFFFF', textShadow: '0 6px 24px rgba(0,0,0,.85)' }}>
             <span className="hl"><span style={{ animationDelay: '.05s' }}>Ideas that</span></span>
             <span className="hl" style={{ marginLeft: heroIndent, color: '#FF2200' }}><span style={{ animationDelay: '.17s' }}>earn</span></span>
             <span className="hl"><span style={{ animationDelay: '.29s' }}>attention.</span></span>
@@ -350,11 +389,11 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
 
           <div style={{ marginTop: heroBarGap, paddingTop: 26, position: 'relative', flex: '0 0 auto', display: 'grid', gridTemplateColumns: heroBarCols, gap: '26px 40px', alignItems: 'center' }}>
             <span aria-hidden="true" style={{ position: 'absolute', left: 0, right: 0, top: 0, height: 1, background: 'rgba(227,226,222,.45)', transformOrigin: 'left', animation: 'heroRule 1.1s cubic-bezier(.16,.84,.3,1) .42s both' }}></span>
-            <div data-hero-fade="" className="hf" style={{ animationDelay: '.52s', fontFamily: "'JetBrains Mono',monospace", fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', lineHeight: 2.1, color: '#FFFFFF', textShadow: '0 1px 0 rgba(0,0,0,1), 0 2px 12px rgba(0,0,0,1), 0 10px 30px rgba(0,0,0,.9)' }}>
+            <div data-hero-fade="" className="hf" style={{ animationDelay: '.52s', fontFamily: "'JetBrains Mono',monospace", fontSize: 11, letterSpacing: '.2em', textTransform: 'uppercase', lineHeight: 2.1, color: '#FFFFFF', textShadow: '0 4px 16px rgba(0,0,0,.8)' }}>
               <div>Performance marketing / Ahmedabad</div>
               <div>Brand / Design / Media / Social / Film</div>
             </div>
-            <p data-hero-fade="" className="hf" style={{ animationDelay: '.62s', margin: 0, maxWidth: '30rem', paddingLeft: heroStatementPad, borderLeft: heroStatementRule, fontSize: 16, lineHeight: 1.55, color: '#FFFFFF', textShadow: '0 1px 0 rgba(0,0,0,1), 0 2px 12px rgba(0,0,0,1), 0 10px 30px rgba(0,0,0,.9)', textWrap: 'pretty' }}>We connect brand, media, social and film into one focused system built to move business forward.</p>
+            <p data-hero-fade="" className="hf" style={{ animationDelay: '.62s', margin: 0, maxWidth: '30rem', paddingLeft: heroStatementPad, borderLeft: heroStatementRule, fontSize: 16, lineHeight: 1.55, color: '#FFFFFF', textShadow: '0 4px 16px rgba(0,0,0,.8)', textWrap: 'pretty' }}>We connect brand, media, social and film into one focused system built to move business forward.</p>
             <a className="hf hero-cta" href="#contact" style={{ animationDelay: '.72s', justifySelf: heroCtaAlign, display: 'inline-flex', alignItems: 'center', gap: 18, background: '#E8451F', color: '#FFFFFF', padding: '20px 32px', fontFamily: "'JetBrains Mono',monospace", fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.2em', fontSize: 12, boxShadow: '0 14px 34px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.15)' }}>Start a project <span aria-hidden="true">→</span></a>
           </div>
         </div>
