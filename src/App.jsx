@@ -320,7 +320,7 @@ export default function App({ revealOnScroll = true, showTicker = true, tickerSe
               inset: 0,
               width: '100%',
               height: '100%',
-              objectFit: 'contain',
+              objectFit: wide ? 'contain' : 'cover',
               objectPosition: 'center center',
               transformOrigin: 'center center',
               filter: 'contrast(1.06) saturate(1.04) brightness(1.35)',
